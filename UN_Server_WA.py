@@ -26,7 +26,7 @@ def main():
 
                 #verification of id attribute
                 if (recv_counter == 0):
-                    if (not(isinstance(data, char)) and int(data) < 100000):
+                    if (not(isinstance(data, str)) and int(data) < 100000):
                         data = 'Invalid User\n'
                         print(data)
                         conn.send(data)
@@ -35,7 +35,7 @@ def main():
                         ind = data
                         data = 'accepted'       #Variable that allows the main app to keep sending information
                         print(data)
-                        recv_counter++
+                        recv_counter += 1
 
                 #verification of password attribute
                 #TODO: Restrict the Password verification (it still accepts characters like '.' and '-')
@@ -46,11 +46,11 @@ def main():
                             print(data)
                             conn.send(data)
                             break
-                        else
+                        else:
                             pswd = data
                             data = 'logged in'
                             print(data)
-                            recv_counter++
+                            recv_counter += 1
 
                 else:
                     #For now, the accounts database will consist of a list of tuples

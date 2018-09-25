@@ -22,14 +22,14 @@ def main():
     password = input("Password: ")
     sckt.connect(server_adress)
     try:
-        message = b'gajas\n'
-        sckt.sendall(message)
+        message = user + " " + password
+        sckt.sendall(message.encode())
         amount_received = 0
         amount_expected = len(message)
         while amount_received < amount_expected:
-            data = sckt.recv(16)
+            data = sckt.recv(128)
             amount_received += len(data)
-            print(data)
+            print(data.decode())
     finally:
         sckt.close()
     return 0
