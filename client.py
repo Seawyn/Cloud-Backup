@@ -37,8 +37,7 @@ def dirList():
 def filelistDir():
 def deleteDir():
 def logout():'''
-def exit():
-    return 0
+
 
 def main():
     if(len(sys.argv) == 4):
@@ -53,18 +52,20 @@ def main():
     else:
         CSport = 58017
     server_adress = ('localhost', CSport)
-    menu_input = input()
-    '''menu = {"login": login(), "deluser": deluser(), "backup dir": backupDir(), "restore dir": restoreDir(),
-    "dirlist": dirList(), "filelist dir": filelistDir(), "delete dir": deleteDir(), "logout": logout(), "exit": exit()}'''
-    if (isinstance(menu_input, str)):
-        instruction = menu_input.split()
+    while True:
+        menu_input = input()
+        '''menu = {"login": login(), "deluser": deluser(), "backup dir": backupDir(), "restore dir": restoreDir(),
+        "dirlist": dirList(), "filelist dir": filelistDir(), "delete dir": deleteDir(), "logout": logout(), "exit": exit()}'''
+        if (isinstance(menu_input, str)):
         #FAZER CHECK NA PASSWORD
-        if(instruction[0] == "login" and isinstance(instruction[1], str) and isinstance(instruction[2], str)):
-            login(instruction[1], instruction[2], server_adress)
-        elif(instruction[0] == "deluser"):
-            print("not done yet")
-        elif(instruction[0] == "exit"):
-            exit()
+            instruction = menu_input.split()
+            if(instruction[0] == "login" and isinstance(instruction[1], str) and isinstance(instruction[2], str)):
+                login(instruction[1], instruction[2], server_adress)
+            elif(instruction[0] == "deluser"):
+                print("not done yet")
+            else:
+                return 0
+
     return 0
 
 main()
