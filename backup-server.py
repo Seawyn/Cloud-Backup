@@ -7,24 +7,32 @@ import socket
 import sys
 
 def main():
-    sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     users = {}
     if(len(sys.argv) == 4 and (isinstance(sys.argv[1], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
         raise TypeError('Error: invalid input.')
     else:
-        CSport = 59000
-    server_adress = ('localhost', CSport)
-    sckt.bind(server_adress)
-    sckt.listen(1)
+        CSport = 58017
+        BSport = 59000
+    tcp_server_adress = ('localhost', CSport)
+    udp_server_adress = ('localhost', BSport)
+    scktTCP.bind(tcp_server_adress)
+    scktUDP.bind(udp_server_adress)
+    scktTCP.listen(1)
+    cenas = "+BS: "
+    scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
     while True:
-        connection, client_adress = sckt.accept()
+        connection, client_adress = scktTCP.accept()
         try:
             while True:
                 data = connection.recv(1024)
                 data = data.decode()
                 data = data.split()
+                msg = scktUDP.recvfrom(1024)
+                print(msg)
                 if data:
                     if(data[1] not in users):
                         users[data[1]] = data[2]
