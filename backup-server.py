@@ -1,7 +1,7 @@
 #Computers' Networks Project
 #Group 17
 
-#CENTRAL SERVER
+#BACKUP SERVER
 
 import socket
 import sys
@@ -9,12 +9,12 @@ import sys
 def main():
     sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     users = {}
-    if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
+    if(len(sys.argv) == 4 and (isinstance(sys.argv[1], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
         raise TypeError('Error: invalid input.')
     else:
-        CSport = 58017
+        CSport = 59000
     server_adress = ('localhost', CSport)
     sckt.bind(server_adress)
     sckt.listen(1)

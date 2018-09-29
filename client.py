@@ -63,8 +63,10 @@ def main():
                 login(instruction[1], instruction[2], server_adress)
             elif(instruction[0] == "deluser"):
                 print("not done yet")
-            else:
+            elif(instruction[0] == "exit"):
                 return 0
+            else:
+                print("Error: Menu instruction invalid.")
 
     return 0
 
