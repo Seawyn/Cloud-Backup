@@ -1,0 +1,20 @@
+#Forks: A brief reminder
+
+#To start of, one has to import the os library:
+import os
+
+#The fork instruction, in this project, will aid with server multitasking, more specifically, with simultaneus TCP and UDP connections all servers have to deal with.
+
+#Using this instruction, a new process can be created thusly:
+newpid = os.fork()
+
+#Whereupon the processes will resume executing the code. We can then filter them using "if" statements:
+if newpid == 0:
+    print("A new child process is: ", os.getpid())
+else:
+    print("The parent process is: ", os.getpid())
+
+#Examining the above code, one concludes that the child process has a pid of 0 (zero)
+
+#After the child process has finished executing his part of the algorithm, we can then end the process with the exit instruction:
+os._exit(0)
