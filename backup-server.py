@@ -15,7 +15,7 @@ def main():
     elif(len(sys.argv) == 3):
         raise TypeError('Error: invalid input.')
     else:
-        CSport = 58017
+        CSport = 58018
         BSport = 59000
     tcp_server_adress = ('localhost', CSport)
     udp_server_adress = ('localhost', BSport)
@@ -26,13 +26,13 @@ def main():
     scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
     while True:
         connection, client_adress = scktTCP.accept()
+        msg = scktUDP.recvfrom(1024)
+        print(msg.decode())
         try:
             while True:
                 data = connection.recv(1024)
                 data = data.decode()
                 data = data.split()
-                msg = scktUDP.recvfrom(1024)
-                print(msg)
                 if data:
                     if(data[1] not in users):
                         users[data[1]] = data[2]

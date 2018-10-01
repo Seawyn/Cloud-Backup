@@ -24,14 +24,13 @@ def main():
     scktTCP.listen(1)
     while True:
         connection, client_adress = scktTCP.accept()
-        msg = scktUDP.recvfrom(1024)
-        print(msg)
         try:
             while True:
                 data = connection.recv(1024)
                 data = data.decode()
                 data = data.split()
-                scktUDP.sendto("RGR OK" , BSport)
+                a = "RGR OK"
+                scktUDP.sendto(a.encode() , (socket.gethostbyname(socket.gethostname()), BSport))
                 if data:
                     if(data[1] not in users):
                         users[data[1]] = data[2]
