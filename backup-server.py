@@ -23,7 +23,8 @@ def main():
     scktUDP.bind(udp_server_adress)
     scktTCP.listen(1)
     cenas = "+BS: "
-    scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
+    #scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
+    scktUDP.sendto(cenas.encode(), (194.210.229.184, BSport))
     while True:
         connection, client_adress = scktTCP.accept()
         msg = scktUDP.recvfrom(1024)

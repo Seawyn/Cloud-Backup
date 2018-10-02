@@ -1,6 +1,8 @@
 #Computers' Networks Project
 #Group 17
 
+#port=58011 user=99999 pass=zzzzzzzz '192.168.1.1'
+
 import socket
 import sys
 
