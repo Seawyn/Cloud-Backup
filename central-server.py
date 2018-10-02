@@ -29,19 +29,19 @@ def main():
                 data = connection.recv(1024)
                 data = data.decode()
                 data = data.split()
-                a = "RGR OK"
+                a = "RGR OK\n"
                 scktUDP.sendto(a.encode() , (socket.gethostbyname(socket.gethostname()), BSport))
                 if data:
                     if(data[1] not in users):
                         users[data[1]] = data[2]
-                        message = "AUR NEW"
+                        message = "AUR NEW\n"
                         print("New user: " + data[1])
                     else:
                         if(users[data[1]] == data[2]):
                             print("User: " + data[1])
-                            message = "AUR OK"
+                            message = "AUR OK\n"
                         else:
-                            message = "AUR NOK"
+                            message = "AUR NOK\n"
                     connection.sendall(message.encode())
                 else:
                     break

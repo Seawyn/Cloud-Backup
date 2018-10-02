@@ -9,7 +9,6 @@ sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def login(user, password, server_address):
     lusername = user
     lpass = password
-    print("connected")
     sckt.connect(server_address)
     try:
         message = "AUT "+ lusername + " " + lpass
@@ -19,12 +18,12 @@ def login(user, password, server_address):
         while amount_received == 0:
             data = sckt.recv(1024)
             amount_received += len(data.decode())
-            if("AUR NEW" == data.decode()):
-                result = "User " + lusername + " created"
-            elif("AUR OK" == data.decode()):
-                result = "Successful login"
-            elif("AUR NOK" == data.decode()):
-                result = "Wrong Password"
+            if("AUR NEW\n" == data.decode()):
+                result = "User " + lusername + " created\n"
+            elif("AUR OK\n" == data.decode()):
+                result = "Successful login\n"
+            elif("AUR NOK\n" == data.decode()):
+                result = "Wrong Password\n"
             print(result)
     finally:
         sckt.close()
@@ -67,7 +66,7 @@ def main():
             elif(instruction[0] == "exit"):
                 return 0
             else:
-                print("Error: Menu instruction invalid.")
+                print("Error: Menu instruction invalid.\n")
 
     return 0
 
