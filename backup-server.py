@@ -5,7 +5,27 @@
 
 import socket
 import sys
+import os
 
+def child():
+    print('\nA new child ',  os.getpid())
+    os._exit(0)
+
+def parent():
+    newpid = os.fork()
+    if newpid == 0:
+        child()
+    else:
+        pids = (os.getpid(), newpid)
+        print("parent: %d, child: %d\n" % pids)
+     reply = input("q for quit / c for new fork")
+     if reply == 'c':
+         continue
+     else:
+         break
+
+
+#chamar a funçao child quando for necessario criar novo processo
 def main():
     scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -23,8 +43,8 @@ def main():
     scktUDP.bind(udp_server_adress)
     scktTCP.listen(1)
     cenas = "+BS: "
-    #scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
-    scktUDP.sendto(cenas.encode(), (194.210.229.184, BSport))
+    scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
+    #scktUDP.sendto(cenas.encode(), ('194.210.229.184', BSport))
     while True:
         connection, client_adress = scktTCP.accept()
         msg = scktUDP.recvfrom(1024)
