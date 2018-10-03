@@ -18,9 +18,12 @@ def main():
     cenas = "+BS: ola jorge\n"
     #scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
     scktUDP.sendto(cenas.encode(), (socket.gethostbyname('lab6p4'), CSport))
-    msg = scktUDP.recvfrom(1024)
-    while msg:
-        print(msg.decode())
+    while True:
+        msg = scktUDP.recvfrom(1024)
+        if msg:
+            print(msg.decode())
+        else:
+            break
     scktUDP.close()
 
     return 0
