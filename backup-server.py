@@ -9,11 +9,11 @@ import os
 
 def child(BSport):
     scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_server_address = (socket.gethostbyname('lab6p4'), BSport)
-    scktUDP.bind(udp_server_address)
+    udp_server_address = (socket.gethostbyname('lab6p4'), CSport)
+    #scktUDP.bind(udp_server_address)
     cenas = "+BS: ola jorge\n"
     #scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
-    scktUDP.sendto(cenas.encode(), (socket.gethostbyname('lab6p4'), BSport))
+    scktUDP.sendto(cenas.encode(), (socket.gethostbyname('lab6p4'), CSport))
     msg = scktUDP.recvfrom(1024)
     while msg:
         print(msg.decode())
@@ -31,7 +31,7 @@ def main():
     elif(len(sys.argv) == 3):
         raise TypeError('Error: invalid input.')
     else:
-        CSport = 58018
+        CSport = 58017
         BSport = 59000
     tcp_server_address = ('localhost', CSport)
     scktTCP.bind(tcp_server_address)

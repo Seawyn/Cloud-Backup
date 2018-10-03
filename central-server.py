@@ -9,7 +9,7 @@ import os
 
 def child(BSport):
     scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_server_address = (socket.gethostbyname('lab6p4'), BSport)
+    udp_server_address = (socket.gethostbyname('lab6p4'), CSport)
     scktUDP.bind(udp_server_address)
     a = "RGR OK\n"
     #scktUDP.sendto(a.encode() , (socket.gethostbyname(socket.gethostname()), BSport))
