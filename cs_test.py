@@ -8,6 +8,9 @@ import sys
 
 
 def main():
+    UDP_IP = 'localhost'
+
+    scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     users = {}
     if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
         CSport = input("Port: ")
@@ -16,19 +19,9 @@ def main():
     else:
         CSport = 58017
         BSport = 59000
-    scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_server_address = (socket.gethostbyname('lab6p4'), CSport)
-    scktUDP.bind(udp_server_address)
     a = "RGR OK\n"
-    #scktUDP.sendto(a.encode() , (socket.gethostbyname(socket.gethostname()), BSport))
-    while True:
-        msg = scktUDP.recvfrom(1024)
-        if msg:
-            print(msg.decode())
-        else:
-            break
-    scktUDP.sendto(a.encode() , ('lab6p9', BSport))
-    scktUDP.close()
+    scktUDP.sendto(a.encode(), (UDP_IP, 58017))
+
     return 0
 
 

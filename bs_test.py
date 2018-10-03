@@ -3,6 +3,9 @@ import sys
 
 #chamar a funçao child quando for necessario criar novo processo
 def main():
+    UDP_IP = 'localhost'
+    UDP_PORT = 58017
+    scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     users = {}
     if(len(sys.argv) == 4 and (isinstance(sys.argv[1], int))):
         CSport = input("Port: ")
@@ -12,20 +15,12 @@ def main():
         CSport = 58017
         BSport = 59000
 
-    scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_server_address = (socket.gethostbyname('lab6p4'), CSport)
-    #scktUDP.bind(udp_server_address)
-    cenas = "+BS: ola jorge\n"
-    #scktUDP.sendto(cenas.encode(), (socket.gethostbyname(socket.gethostname()), BSport))
-    scktUDP.sendto(cenas.encode(), (socket.gethostbyname('lab6p4'), CSport))
-    while True:
-        msg = scktUDP.recvfrom(1024)
-        if msg:
-            print(msg.decode())
-        else:
-            break
-    scktUDP.close()
+    scktUDP.bind((UDP_IP, UDP_PORT))
 
+
+    while True:
+        data, addr = scktUDP.recvfrom(1024) # buffer size is 1024 bytes
+        print (data.decode())
     return 0
 
 
