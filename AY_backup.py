@@ -13,7 +13,7 @@ def child(CSport, BSport):
     scktUDP.bind((UDP_IP, BSport))
     IP = socket.gethostbyname(socket.gethostname())
 
-    msg = "+BS: " + IP  + " " + str(BSport)
+    msg = "REG " + IP  + " " + str(BSport)
     scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
     n = 0
     while True:
@@ -26,7 +26,6 @@ def child(CSport, BSport):
     os._exit(0)
 
 
-#chamar a funçao child quando for necessario criar novo processo
 def main():
     #scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     users = {}

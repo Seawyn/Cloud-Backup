@@ -27,20 +27,14 @@ def main():
         BSport = 59000
 
     scktUDP.bind((UDP_IP, UDP_PORT))
-
-    data, addr = scktUDP.recvfrom(1024) # buffer size is 1024 bytes
-    ola = 0
-    while ola < 2:
-        if data:
-            print (data.decode())
-            data = 0
-        else:
-            #child()
-            msg = "+BS: "
-            print(addr)
-            scktUDP.sendto(msg.encode(), addr)
-            print("mandei msg")
-        ola += 1
+    flag = 0
+    while True:
+        data, addr = scktUDP.recvfrom(1024) # buffer size is 1024 bytes
+        print (data.decode())
+        msg = "+BS: "
+        scktUDP.sendto(msg.encode(), addr)
+        scktUDP.close()
+    
         '''if os.fork() == 0:
                 print("oi")
                 child()
