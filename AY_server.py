@@ -13,7 +13,10 @@ def child(CSport, BSport):
     scktUDP.bind((UDP_IP, CSport))
     print("vou receber mensagem:")
     dataUDP, addrUDP = scktUDP.recvfrom(1024) # the problem is here
-    print (dataUDP.decode())
+    dataUDP = dataUDP.decode()
+    dataUDP = dataUDP.split()
+    BSmsg = "+BS: " + dataUDP[1]  + " " + dataUDP[2]
+    print (BSmsg)
     while True:
         a = "RGR OK\n"
         scktUDP.sendto(a.encode(), (UDP_IP, BSport))
@@ -21,6 +24,7 @@ def child(CSport, BSport):
 
 def main():
     users = {}
+    luser = -1
     if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
@@ -44,13 +48,22 @@ def main():
                     data = data.decode()
                     data = data.split()
                     if data:
-                        if(data[1] not in users):
+                        if (data[0] == "DLU"):
+                            if(luser != -1):
+                                del users[luser]
+                                luser = -1
+                                message = "DLU OK"
+                            else:
+                                message = "DLU NOK"
+                        elif(data[1] not in users):
                             users[data[1]] = data[2]
                             message = "AUR NEW\n"
                             print("New user: " + data[1])
+
                         else:
                             if(users[data[1]] == data[2]):
                                 print("User: " + data[1])
+                                luser = data[1]
                                 message = "AUR OK\n"
                             else:
                                 message = "AUR NOK\n"
