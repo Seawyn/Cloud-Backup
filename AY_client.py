@@ -5,6 +5,8 @@
 
 import socket
 import sys
+import os
+import time
 
 sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -50,12 +52,20 @@ def deluser(lusername, lpass, server_address):
         sckt.close()
     return 0
 
-def backupDir(user, password, server_address):
+def backupDir(user, password, server_address, dir):
     sckt.connect(server_address)
     try:
         message = "AUT " + user + " " + password
         sckt.sendall(message.encode())
-        amount_received = 0
+        data = sckt.recv(1024)
+        if ("AUR OK\n" == data.decode()):
+            Message = "BCK " + dir + ' ' + str(len(os.listdir(dir)))
+            sckt.sendall(Message.encode())
+            #Part where he receives the ip address and port
+            received = sckt.recv(1024)
+            received.split()
+
+        '''amount_received = 0
         amount_expected = 1024
         while amount_received == 0:
             data = sckt.recv(1024)
@@ -66,7 +76,7 @@ def backupDir(user, password, server_address):
                 result = "backup to: endereço port\n"
             elif("UPR OK\n" == data.decode()):
                 result = "completed - RC: NOME DOS FICHEIROS"
-            print(result)
+            print(result)'''
     finally:
         sckt.close()
     return 0
@@ -98,7 +108,7 @@ def main():
             elif(instruction[0] == "deluser"):
                 deluser(luser, lpassword, server_address)
             elif(instruction[0] == "backup" and instruction[1] == "dir"):
-                backupDir(luser, lpassword, server_address)
+                backupDir(luser, lpassword, server_address, instruction[1])
             elif(instruction[0] == "exit"):
                 return 0
             else:
