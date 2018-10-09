@@ -77,7 +77,6 @@ def backupDir(user, password, server_address, directory):
                 file_time = time.strftime('%H:%M:%S', stat)
                 size = os.path.getsize(path)
                 Message += '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
-            print(Message)
             sckt.sendall(Message.encode())
     finally:
         sckt.close()

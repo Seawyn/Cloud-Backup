@@ -8,7 +8,15 @@ import socket
 import sys
 import os
 
+flag_BCK = 0
+luser = -1
+lpassword = -1
+
 def child(CSport, BSport):
+    global flag_BCK
+    global luser
+    global lpassword
+
     UDP_IP = 'localhost'
     scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     scktUDP.bind((UDP_IP, CSport))
@@ -18,14 +26,19 @@ def child(CSport, BSport):
     dataUDP = dataUDP.split()
     BSmsg = "+BS: " + dataUDP[1]  + " " + dataUDP[2]
     print (BSmsg)
+    a = "RGR OK\n"
+    scktUDP.sendto(a.encode(), (UDP_IP, BSport))
     while True:
-        a = "RGR OK\n"
-        scktUDP.sendto(a.encode(), (UDP_IP, BSport))
+        if(flag_BCK == 1):
+            BSmsg = "LSU " + luser + ' ' + lpassword
+            scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
     os._exit(0)
 
 def main():
     users = {}
-    luser = -1
+    global luser
+    global lpassword
+    global flag_BCK
     if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
@@ -54,22 +67,27 @@ def main():
                                 del users[luser]
                                 luser = -1
                                 message = "DLU OK\n"
+                                #Falta condição para os novos users
                         elif(data[0] == "AUT" and data[1] not in users):
+                            usersfile = open("userslist.txt", 'a')
+                            usersfile.write(data[1] + ' ' + data[2] + '\n')
+                            usersfile.close()
                             users[data[1]] = data[2]
                             message = "AUR NEW\n"
                             print("New user: " + data[1])
                         elif(data[0] == "BCK"):
                             print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
                             data = connection.recv(1024)
-                            data = data.decode()
-                            print(data)
+                            flag_BCK = 1
                         else:
-                            if(users[data[1]] == data[2]):
-                                print("User: " + data[1])
-                                luser = data[1]
-                                message = "AUR OK\n"
-                            else:
-                                message = "AUR NOK\n"
+                            usersfile = open("userslist.txt", 'r')
+                            lista = usersfile.readlines()
+                            for i in range(len(lista)):
+                                if(lista[i] == data[1] + ' ' + data[2] + '\n'):
+                                    print("User: " + data[1])
+                                    luser = data[1]
+                                    message = "AUR OK\n"
+                            usersfile.close()
                         connection.sendall(message.encode())
                     else:
                         break
