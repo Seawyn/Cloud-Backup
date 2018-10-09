@@ -69,15 +69,16 @@ def backupDir(user, password, server_address, directory):
             Message = "BCK " + directory + ' ' + str(num)
             sckt.sendall(Message.encode())
             #Part where he receives the ip address and port
+            Message = ''
             for i in range(num):
                 path = os.path.join(directory, files[i])
                 stat = time.gmtime(os.path.getmtime(path))
                 date = time.strftime('%d.%m.%y', stat)
                 file_time = time.strftime('%H:%M:%S', stat)
                 size = os.path.getsize(path)
-                Message = '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
-                print(Message)
-            received = sckt.recv(1024)
+                Message += '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
+            print(Message)
+            sckt.sendall(Message.encode())
     finally:
         sckt.close()
     return 0
