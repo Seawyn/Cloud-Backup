@@ -54,12 +54,15 @@ def main():
                                 del users[luser]
                                 luser = -1
                                 message = "DLU OK\n"
-                        elif(data[1] not in users):
+                        elif(data[0] == "AUT" and data[1] not in users):
                             users[data[1]] = data[2]
                             message = "AUR NEW\n"
                             print("New user: " + data[1])
                         elif(data[0] == "BCK"):
-                            print("BCK " + luser + " [nome diretoria] [IP] " + CSport)
+                            print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
+                            data = connection.recv(1024)
+                            data = data.decode()
+                            print(data)
                         else:
                             if(users[data[1]] == data[2]):
                                 print("User: " + data[1])

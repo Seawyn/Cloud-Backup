@@ -53,24 +53,31 @@ def deluser(lusername, lpass, server_address):
         result = result.decode()
         if(result == "DLU OK\n"):
         	luser = -1
-        	print(luser)
-        print(result)
     finally:
         sckt.close()
     return 0
 
-def backupDir(user, password, server_address, dir):
+def backupDir(user, password, server_address, directory):
     sckt.connect(server_address)
     try:
         message = "AUT " + user + " " + password
         sckt.sendall(message.encode())
         data = sckt.recv(1024)
         if ("AUR OK\n" == data.decode()):
-            Message = "BCK " + dir + ' ' + str(len(os.listdir(dir)))
+            files = os.listdir(directory)
+            num = len(files)
+            Message = "BCK " + directory + ' ' + str(num)
             sckt.sendall(Message.encode())
             #Part where he receives the ip address and port
+            for i in range(num):
+                path = os.path.join(directory, files[i])
+                stat = time.gmtime(os.path.getmtime(path))
+                date = time.strftime('%d.%m.%y', stat)
+                file_time = time.strftime('%H:%M:%S', stat)
+                size = os.path.getsize(path)
+                Message = '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
+                print(Message)
             received = sckt.recv(1024)
-            received.split()
     finally:
         sckt.close()
     return 0
@@ -104,8 +111,8 @@ def main():
             		else:
                 		deluser(luser, lpassword, server_address)
             elif(instruction[0] == "backup" and len(instruction) == 2):
-                dir = instruction[1]
-                backupDir(luser, lpassword, server_address, dir)
+                directory = instruction[1]
+                backupDir(luser, lpassword, server_address, directory)
             elif(instruction[0] == "exit"):
                 return 0
             else:
