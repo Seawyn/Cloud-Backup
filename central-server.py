@@ -30,8 +30,9 @@ def child(CSport, BSport):
     scktUDP.sendto(a.encode(), (UDP_IP, BSport))
     while True:
         if(flag_BCK == 1):
-            BSmsg = "LSU " + luser + ' ' + lpassword
+            BSmsg = "LSU " + luser + ' ' + lpassword + '\n'
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
+            flag_BCK = 0
     os._exit(0)
 
 def main():

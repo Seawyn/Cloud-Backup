@@ -19,9 +19,10 @@ def child(CSport, BSport):
     while True:
         data, addr = scktUDP.recvfrom(1024) # buffer size is 1024 bytes
         data = data.decode()
+        #command = data.split()
         if data == "RGR OK\n" and n == 0:
             n += 1
-            print ("yeah boi")
+        #elif command[0] == "LSU":
 
     os._exit(0)
 
