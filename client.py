@@ -71,19 +71,6 @@ def backupDir(user, password, server_address, dir):
             #Part where he receives the ip address and port
             received = sckt.recv(1024)
             received.split()
-
-        '''amount_received = 0
-        amount_expected = 1024
-        while amount_received == 0:
-            data = sckt.recv(1024)
-            amount_received += len(data.decode())
-            if("AUR OK\n" == data.decode()):
-                result = "\n"
-            elif("BCK RC NUMERO QUE N ENTENDO\n" == data.decode()):
-                result = "backup to: endereço port\n"
-            elif("UPR OK\n" == data.decode()):
-                result = "completed - RC: NOME DOS FICHEIROS"
-            print(result)'''
     finally:
         sckt.close()
     return 0
@@ -116,8 +103,9 @@ def main():
             			print("Login required.")
             		else:
                 		deluser(luser, lpassword, server_address)
-            elif(instruction[0] == "backup" and instruction[1] == "dir"):
-                backupDir(luser, lpassword, server_address, instruction[1])
+            elif(instruction[0] == "backup" and len(instruction) == 2):
+                dir = instruction[1]
+                backupDir(luser, lpassword, server_address, dir)
             elif(instruction[0] == "exit"):
                 return 0
             else:
