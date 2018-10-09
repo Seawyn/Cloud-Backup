@@ -9,6 +9,8 @@ import os
 import time
 
 sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+luser = -1
+lpassword = -1
 
 def login(user, password, server_address):
     lusername = user
@@ -37,6 +39,7 @@ def login(user, password, server_address):
 def deluser(lusername, lpass, server_address):
     sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Resolve o bad file descriptor
     sckt.connect(server_address)
+    global luser
     try:
         message = "AUT "+ lusername + " " + str(lpass)
         sckt.sendall(message.encode())
@@ -44,10 +47,14 @@ def deluser(lusername, lpass, server_address):
         amount_expected = 1024
         data = sckt.recv(1024)
         if("AUR OK\n" == data.decode()):
-            message = "DLU"
+            message = "DLU\n"
             sckt.sendall(message.encode())
         result = sckt.recv(1024)
-        print(result.decode())
+        result = result.decode()
+        if(result == "DLU OK\n"):
+        	luser = -1
+        	print(luser)
+        print(result)
     finally:
         sckt.close()
     return 0
@@ -94,8 +101,7 @@ def main():
     else:
         CSport = 58017
     server_address = ('localhost', CSport)
-    luser = -1
-    lpassword = -1
+    global luser
     while True:
         menu_input = input()
         if (isinstance(menu_input, str)):
@@ -106,7 +112,10 @@ def main():
                 lpassword = instruction[2]
                 login(luser, lpassword, server_address)
             elif(instruction[0] == "deluser"):
-                deluser(luser, lpassword, server_address)
+            		if(luser == -1):
+            			print("Login required.")
+            		else:
+                		deluser(luser, lpassword, server_address)
             elif(instruction[0] == "backup" and instruction[1] == "dir"):
                 backupDir(luser, lpassword, server_address, instruction[1])
             elif(instruction[0] == "exit"):

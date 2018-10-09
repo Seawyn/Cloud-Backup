@@ -53,9 +53,9 @@ def main():
                             if(luser != -1):
                                 del users[luser]
                                 luser = -1
-                                message = "DLU OK"
-                            else:
-                                message = "DLU NOK"
+                                message = "DLU OK\n"
+                            '''else:
+                                message = "DLU NOK\n"'''
                         elif(data[1] not in users):
                             users[data[1]] = data[2]
                             message = "AUR NEW\n"
