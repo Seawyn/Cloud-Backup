@@ -60,7 +60,9 @@ def main():
                             users[data[1]] = data[2]
                             message = "AUR NEW\n"
                             print("New user: " + data[1])
-
+                        elif(data[0] == "BCK"):
+                            print("User: " + luser)
+                            
                         else:
                             if(users[data[1]] == data[2]):
                                 print("User: " + data[1])
