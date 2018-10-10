@@ -60,32 +60,33 @@ def main():
         scktTCP.bind(tcp_server_address)
         scktTCP.listen(1)
 
-    while True:
-        connection, client_address = scktTCP.accept()
-        try:
-            while True:
-                data = connection.recv(1024)
-                data = data.decode()
-                data = data.split()
-                if data:
-                    if(users[data[1]] == data[2]):
-                        print("User: " + data[1])
-                        message = "AUR OK\n"
+        while True:
+            print('Trying to give up on cife')
+            connection, client_address = scktTCP.accept()
+            try:
+                while True:
+                    data = connection.recv(1024)
+                    data = data.decode()
+                    data = data.split()
+                    if data:
+                        if(users[data[1]] == data[2]):
+                            print("User: " + data[1])
+                            message = "AUR OK\n"
+                        else:
+                            message = "AUR NOK\n"
+                        if(data[0] == "UPL"):
+                            for i in range(data[2]):
+                                fileslist = connection.recv(1024)
+                                if i == 0:
+                                    print(data[1] + ': ' + fileslist + ' Bytes received')
+                                else:
+                                    print(fileslist + ' Bytes received')
+                            message = "UPR OK\n"
+                        connection.sendall(message.encode())
                     else:
-                        message = "AUR NOK\n"
-                    if(data[0] == "UPL"):
-                        for i in range(data[2]):
-                            fileslist = connection.recv(1024)
-                            if i == 0:
-                                print(data[1] + ': ' + fileslist + ' Bytes received')
-                            else:
-                                print(fileslist + ' Bytes received')
-                        message = "UPR OK\n"
-                    connection.sendall(message.encode())
-                else:
-                    break
-        finally:
-            connection.close()
+                        break
+            finally:
+                connection.close()
 
     return 0
 
