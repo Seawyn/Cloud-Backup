@@ -67,17 +67,21 @@ def main():
                     data = data.decode()
                     data = data.split()
                     if data:
-                        usersfile = open("BS_userslist.txt", 'r')
-                        userslist = usersfile.readlines()
-                        for i in range(len(userslist)-1):
-                            if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
-                                print("User: " + data[1])
-                                luser = data[1]
-                                message = "AUR OK\n"
-                            else:
-                                message = "AUR NOK\n"
-                        if(data[0] == "UPL"):
-                            for i in range(data[2]):
+                        if(data[0] == "AUT"):
+                            usersfile = open("BS_userslist.txt", 'r')
+                            userslist = usersfile.readlines()
+                            for i in range(len(userslist)):
+                                print(userslist[i])
+                                if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
+                                    print("User: " + data[1])
+                                    luser = data[1]
+                                    message = "AUR OK\n"
+                                else:
+                                    message = "AUR NOK\n"
+                            usersfile.close()
+                        elif(data[0] == "UPL"):
+                            print("vou mandar upr ok")
+                            for i in range(data[2]): #resolver ciclo
                                 fileslist = connection.recv(1024)
                                 if i == 0:
                                     print(data[1] + ': ' + fileslist + ' Bytes received')

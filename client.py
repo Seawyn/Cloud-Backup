@@ -70,7 +70,9 @@ def backupBS(user, password, server_address, directory):
         files = os.listdir(directory)
         num = len(files)
         result = 'completed – ' + directory + ': '
+        print(data.decode())
         if ("AUR OK\n" == data.decode()):
+            print("entrei no aur ok")
             Message = "UPL " + directory + str(num)
             socket_aux.sendall(Message.encode())
             #sckt.sendall(Message.encode())
