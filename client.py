@@ -107,7 +107,7 @@ def backupDir(user, password, server_address, directory):
             result = sckt.recv(1024)
             result = result.decode()
             result = result.split()
-            print("backup to :" + result[1] + result[2])
+            print("backup to :" + result[1] + ' ' + result[2])
             server_address = (result[1], result[2])
     finally:
         sckt.close()

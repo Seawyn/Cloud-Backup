@@ -32,11 +32,11 @@ def child(CSport, BSport):
                     msg = "LUR NOK\n"
             usersfile.close()
             if(msg != "LUR NOK\n"):
-                usersfile = open("userslist.txt", 'a')
+                usersfile = open("BS_userslist.txt", 'a')
                 usersfile.write(data[1] + ' ' + data[2] + '\n')
                 usersfile.close()
                 print('New user: ' + data[1])
-                msg = "LUR OK"
+                msg = "LUR OK\n"
                 scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
 
     os._exit(0)

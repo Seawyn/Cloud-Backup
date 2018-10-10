@@ -10,45 +10,46 @@
 import socket
 import sys
 import os
+import signal
+from multiprocessing import Process, Pipe
 
-flag_BKR = 0
-flag_BCK = 0
-luser = -1
-lpassword = -1
 
-def child(CSport, BSport):
-    global flag_BCK
-    global flag_BKR
-    global luser
-    global lpassword
+scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+
+def signal_handler(sig, frame):
+    scktTCP.close()
+    scktUDP.close()
+    sys.exit(0)
+
+def child(CSport, BSport, childPipe):
+    luser = childPipe.recv()
+    lpassword = childPipe.recv()
     UDP_IP = 'localhost'
-    scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    signal.signal(signal.SIGINT, signal_handler)
     scktUDP.bind((UDP_IP, CSport))
-    print("vou receber mensagem:")
-    dataUDP, addrUDP = scktUDP.recvfrom(1024) # the problem is here
+    dataUDP, addrUDP = scktUDP.recvfrom(1024)
     dataUDP = dataUDP.decode()
     dataUDP = dataUDP.split()
     BSmsg = "+BS: " + dataUDP[1]  + " " + dataUDP[2]
     print (BSmsg)
-    a = "RGR OK\n"
-    scktUDP.sendto(a.encode(), (UDP_IP, BSport))
+    msg = "RGR OK\n"
+    scktUDP.sendto(msg.encode(), (UDP_IP, BSport))
     while True:
-        if(flag_BCK == 1):
-            BSmsg = "LSU " + luser + ' ' + lpassword
+        if childPipe.recv() == 1:
+            print("entrei na merda do bck == 1")
+            BSmsg = "LSU " + str(luser) + ' ' + str(lpassword)
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
-            dataUDP = scktUDP.recvfrom(1024)
+            print("sent, gonna receive")
+            dataUDP = scktUDP.recvfrom(1024) #the problem is here
             if(dataUDP.decode() == "LUR OK\n" or dataUDP.decode() == "LUR NOK\n"):
-                flag_BKR = 1
-                flag_BCK = 0
+                print("gajas")
+                childPipe.send(2)
     os._exit(0)
 
 def main():
     users = {}
-    global luser
-    global lpassword
-    global flag_BCK
-    global flag_BKR
     if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
@@ -56,11 +57,13 @@ def main():
     else:
         CSport = 58017
         BSport = 59000
+    parentPipe, childPipe = Pipe()
     newpid = os.fork()
     if newpid == 0:
-        child(CSport, BSport)
+        p = Process(target=child, args=(CSport, BSport, childPipe))
+        p.start()
     else:
-        scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        signal.signal(signal.SIGINT, signal_handler)
         tcp_server_address = ('localhost', CSport)
         scktTCP.bind(tcp_server_address)
         scktTCP.listen(1)
@@ -83,18 +86,26 @@ def main():
                             usersfile.write(data[1] + ' ' + data[2] + '\n')
                             usersfile.close()
                             users[data[1]] = data[2]
+                            parentPipe.send(data[1])
+                            parentPipe.send(data[2])
                             message = "AUR NEW\n"
                             print("New user: " + data[1])
                         elif(data[0] == "BCK"):
+                            print("vou fazer backup")
                             print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
                             num = data[2]
+                            #p.start()
+                            parentPipe.send(1)
+                            #flag_BCK = 1
+                            print("mudei a flag")
                             data = connection.recv(1024)
-                            flag_BCK = 1
                             while True:
-                                if flag_BKR == 1:
-                                    message = "BKR " + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport)) + ' ' + num
+                                if parentPipe.recv() == 2:
+                                    message = "BKR " + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport) + ' ' + str(num)
                                     connection.sendall(message.encode())
+                                    print('oi')
                                     message = data.decode()
+                                    p.join()
                                     break
 
                         else:
