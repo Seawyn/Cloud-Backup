@@ -22,7 +22,6 @@ def child(CSport, BSport):
         data = data.split()
         if data[0] == "RGR" and data[1] == "OK" and n == 0:
             n += 1
-            print ("yeah boi")
         elif data[0] == "LSU":
             usersfile = open("BS_userslist.txt", 'r')
             lista = usersfile.readlines()
@@ -36,6 +35,7 @@ def child(CSport, BSport):
                 usersfile = open("userslist.txt", 'a')
                 usersfile.write(data[1] + ' ' + data[2] + '\n')
                 usersfile.close()
+                print('New user: ' + data[1])
                 msg = "LUR OK"
                 scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
 
@@ -74,6 +74,12 @@ def main():
                     else:
                         message = "AUR NOK\n"
                     if(data[0] == "UPL"):
+                        for i in range(data[2]):
+                            fileslist = connection.recv(1024)
+                            if i == 0:
+                                print(data[1] + ': ' + fileslist + ' Bytes received')
+                            else:
+                                print(fileslist + ' Bytes received')
                         message = "UPR OK\n"
                     connection.sendall(message.encode())
                 else:

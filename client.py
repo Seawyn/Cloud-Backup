@@ -68,15 +68,16 @@ def backupBS(user, password, server_address, directory):
         if ("AUR OK\n" == data.decode()):
             Message = "UPL " + directory + str(num)
             sckt.sendall(Message.encode())
-            Message = ''
             for i in range(num):
                 path = os.path.join(directory, files[i])
                 stat = time.gmtime(os.path.getmtime(path))
                 date = time.strftime('%d.%m.%y', stat)
                 file_time = time.strftime('%H:%M:%S', stat)
                 size = os.path.getsize(path)
-                Message += '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
-            sckt.sendall(Message.encode())
+                Message = '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
+                sckt.sendall(Message.encode())
+    finally:
+        sckt.close()
 
 def backupDir(user, password, server_address, directory):
     sckt.connect(server_address)
