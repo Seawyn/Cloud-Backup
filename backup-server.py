@@ -19,10 +19,25 @@ def child(CSport, BSport):
     while True:
         data, addr = scktUDP.recvfrom(1024) # buffer size is 1024 bytes
         data = data.decode()
-        #command = data.split()
-        if data == "RGR OK\n" and n == 0:
+        data = data.split()
+        if data[0] == "RGR" and data[1] == "OK" and n == 0:
             n += 1
-        #elif command[0] == "LSU":
+            print ("yeah boi")
+        elif data[0] == "LSU":
+            usersfile = open("BS_userslist.txt", 'r')
+            lista = usersfile.readlines()
+            for i in range(len(lista)):
+                if(lista[i] == data[1] + ' ' + data[2] + '\n'):
+                    print("User: " + data[1])
+                    luser = data[1]
+                    msg = "LUR NOK\n"
+            usersfile.close()
+            if(msg != "LUR NOK\n"):
+                usersfile = open("userslist.txt", 'a')
+                usersfile.write(data[1] + ' ' + data[2] + '\n')
+                usersfile.close()
+                msg = "LUR OK"
+                scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
 
     os._exit(0)
 

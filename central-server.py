@@ -4,16 +4,21 @@
 #kill -9 PID para acabar o processo
 #CENTRAL SERVER
 
+#Otherwise, the CS exchanges LSF-LFD messages with the BS, to
+#receive the list of missing or changed files in the backup.
+
 import socket
 import sys
 import os
 
+flag_BKR = 0
 flag_BCK = 0
 luser = -1
 lpassword = -1
 
 def child(CSport, BSport):
     global flag_BCK
+    global flag_BKR
     global luser
     global lpassword
 
@@ -30,9 +35,12 @@ def child(CSport, BSport):
     scktUDP.sendto(a.encode(), (UDP_IP, BSport))
     while True:
         if(flag_BCK == 1):
-            BSmsg = "LSU " + luser + ' ' + lpassword + '\n'
+            BSmsg = "LSU " + luser + ' ' + lpassword
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
-            flag_BCK = 0
+            dataUDP = scktUDP.recvfrom(1024)
+            if(dataUDP.decode() == "LUR OK\n" or dataUDP.decode() == "LUR NOK\n"):
+                flag_BKR = 1
+                flag_BCK = 0
     os._exit(0)
 
 def main():
@@ -40,6 +48,7 @@ def main():
     global luser
     global lpassword
     global flag_BCK
+    global flag_BKR
     if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
@@ -78,8 +87,15 @@ def main():
                             print("New user: " + data[1])
                         elif(data[0] == "BCK"):
                             print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
+                            num = data[2]
                             data = connection.recv(1024)
                             flag_BCK = 1
+                            while True:
+                                if flag_BKR == 1:
+                                    message = "BKR " + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport)) + ' ' + num + '\n'
+                                    message += data.decode()
+                                    break
+
                         else:
                             usersfile = open("userslist.txt", 'r')
                             lista = usersfile.readlines()
