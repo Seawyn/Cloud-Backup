@@ -92,8 +92,9 @@ def main():
                             flag_BCK = 1
                             while True:
                                 if flag_BKR == 1:
-                                    message = "BKR " + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport)) + ' ' + num + '\n'
-                                    message += data.decode()
+                                    message = "BKR " + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport)) + ' ' + num
+                                    connection.sendall(message.encode())
+                                    message = data.decode()
                                     break
 
                         else:

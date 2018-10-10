@@ -43,7 +43,6 @@ def child(CSport, BSport):
 
 
 def main():
-    #scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     users = {}
     if(len(sys.argv) == 4 and (isinstance(sys.argv[1], int))):
         CSport = input("Port: ")
@@ -52,38 +51,35 @@ def main():
     else:
         CSport = 58017
         BSport = 59000
-    #tcp_server_address = ('localhost', CSport)
-    #scktTCP.bind(tcp_server_address)
-    #scktTCP.listen(1)
     newpid = os.fork()
     if newpid == 0:
         child(CSport, BSport)
-    #while True:
-        #connection, client_address = scktTCP.accept()
-        """else:
-            pids = (os.getpid(), newpid)
-            print("parent: %d, child: %d\n" % pids)
-            try:
-                while True:
-                    data = connection.recv(1024)
-                    data = data.decode()
-                    data = data.split()
-                    if data:
-                        if(data[1] not in users):
-                            users[data[1]] = data[2]
-                            message = "AUR NEW\n"
-                            print("New user: " + data[1])
-                        else:
-                            if(users[data[1]] == data[2]):
-                                print("User: " + data[1])
-                                message = "AUR OK\n"
-                            else:
-                                message = "AUR NOK\n"
-                        connection.sendall(message.encode())
+    else:
+        scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_server_address = ('localhost', BSport)
+        scktTCP.bind(tcp_server_address)
+        scktTCP.listen(1)
+
+    while True:
+        connection, client_address = scktTCP.accept()
+        try:
+            while True:
+                data = connection.recv(1024)
+                data = data.decode()
+                data = data.split()
+                if data:
+                    if(users[data[1]] == data[2]):
+                        print("User: " + data[1])
+                        message = "AUR OK\n"
                     else:
-                        break
-            finally:
-                connection.close()"""
+                        message = "AUR NOK\n"
+                    if(data[0] == "UPL"):
+                        message = "UPR OK\n"
+                    connection.sendall(message.encode())
+                else:
+                    break
+        finally:
+            connection.close()
 
     return 0
 

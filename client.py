@@ -57,6 +57,27 @@ def deluser(lusername, lpass, server_address):
         sckt.close()
     return 0
 
+def backupBS(user, password, server_address, directory):
+    sckt.connect(server_address)
+    try:
+        message = "AUT " + user + " " + password
+        sckt.sendall(message.encode())
+        data = sckt.recv(1024)
+        files = os.listdir(directory)
+        num = len(files)
+        if ("AUR OK\n" == data.decode()):
+            Message = "UPL " + directory + str(num)
+            sckt.sendall(Message.encode())
+            Message = ''
+            for i in range(num):
+                path = os.path.join(directory, files[i])
+                stat = time.gmtime(os.path.getmtime(path))
+                date = time.strftime('%d.%m.%y', stat)
+                file_time = time.strftime('%H:%M:%S', stat)
+                size = os.path.getsize(path)
+                Message += '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
+            sckt.sendall(Message.encode())
+
 def backupDir(user, password, server_address, directory):
     sckt.connect(server_address)
     try:
@@ -81,8 +102,11 @@ def backupDir(user, password, server_address, directory):
             result = sckt.recv(1024)
             result = result.decode()
             result = result.split()
+            print("backup to :" + result[1] + result[2])
+            server_address = (result[1], result[2])
     finally:
         sckt.close()
+        backupBS(user, password, server_address, directory)
     return 0
 
 def main():
