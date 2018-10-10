@@ -46,6 +46,7 @@ def child(CSport, BSport, childPipe):
             if(dataUDP.decode() == "LUR OK\n" or dataUDP.decode() == "LUR NOK\n"):
                 print("gajas")
                 childPipe.send(2)
+                #p.join()
     os._exit(0)
 
 def main():
@@ -103,7 +104,6 @@ def main():
                                     connection.sendall(message.encode())
                                     print('oi')
                                     message = data.decode()
-                                    p.join()
                                     break
 
                         else:
