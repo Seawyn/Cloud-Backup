@@ -12,7 +12,6 @@ def child(CSport, BSport):
     UDP_IP = 'localhost'
     scktUDP.bind((UDP_IP, BSport))
     IP = socket.gethostbyname(socket.gethostname())
-
     msg = "REG " + IP  + " " + str(BSport)
     scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
     n = 0
@@ -24,9 +23,9 @@ def child(CSport, BSport):
             n += 1
         elif data[0] == "LSU":
             usersfile = open("BS_userslist.txt", 'r')
-            lista = usersfile.readlines()
-            for i in range(len(lista)):
-                if(lista[i] == data[1] + ' ' + data[2] + '\n'):
+            userslist = usersfile.readlines()
+            for i in range(len(userslist)):
+                if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
                     print("User: " + data[1])
                     luser = data[1]
                     msg = "LUR NOK\n"
@@ -61,7 +60,6 @@ def main():
         scktTCP.listen(1)
 
         while True:
-            print('Trying to give up on cife')
             connection, client_address = scktTCP.accept()
             try:
                 while True:
@@ -69,11 +67,15 @@ def main():
                     data = data.decode()
                     data = data.split()
                     if data:
-                        if(users[data[1]] == data[2]):
-                            print("User: " + data[1])
-                            message = "AUR OK\n"
-                        else:
-                            message = "AUR NOK\n"
+                        usersfile = open("BS_userslist.txt", 'r')
+                        userslist = usersfile.readlines()
+                        for i in range(len(userslist)-1):
+                            if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
+                                print("User: " + data[1])
+                                luser = data[1]
+                                message = "AUR OK\n"
+                            else:
+                                message = "AUR NOK\n"
                         if(data[0] == "UPL"):
                             for i in range(data[2]):
                                 fileslist = connection.recv(1024)

@@ -38,13 +38,10 @@ def child(CSport, BSport, childPipe):
     lpassword = childPipe.recv()
     while True:
         if childPipe.recv() == 1:
-            print("entrei na merda do bck == 1")
             BSmsg = "LSU " + str(luser) + ' ' + str(lpassword)
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
-            print("sent, gonna receive")
             dataUDP, addr = scktUDP.recvfrom(1024) #the problem is here
             if(dataUDP.decode() == "LUR OK\n" or dataUDP.decode() == "LUR NOK\n"):
-                print("gajas")
                 childPipe.send(2)
                 #p.join()
     os._exit(0)
@@ -92,25 +89,22 @@ def main():
                             message = "AUR NEW\n"
                             print("New user: " + data[1])
                         elif(data[0] == "BCK"):
-                            print("vou fazer backup")
                             print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
                             num = data[2]
                             parentPipe.send(1)
-                            print("mudei a flag")
                             data = connection.recv(1024)
                             while True:
                                 if parentPipe.recv() == 2:
                                     message = "BKR " + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport) + ' ' + str(num)
                                     connection.sendall(message.encode())
-                                    print('oi')
                                     message = data.decode()
                                     break
 
                         else:
                             usersfile = open("userslist.txt", 'r')
-                            lista = usersfile.readlines()
-                            for i in range(len(lista)):
-                                if(lista[i] == data[1] + ' ' + data[2] + '\n'):
+                            userslist = usersfile.readlines()
+                            for i in range(len(userslist)):
+                                if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
                                     print("User: " + data[1])
                                     luser = data[1]
                                     message = "AUR OK\n"
