@@ -60,22 +60,17 @@ def deluser(lusername, lpass, server_address):
 def backupBS(user, password, server_address, directory):
     socket_aux = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_aux.connect(server_address)
-    #sckt.connect(server_address)
     try:
         message = "AUT " + user + " " + password
         socket_aux.sendall(message.encode())
-        #sckt.sendall(message.encode())
         data = socket_aux.recv(1024)
-        #data = sckt.recv(1024)
         files = os.listdir(directory)
         num = len(files)
         result = 'completed – ' + directory + ': '
         print(data.decode())
         if ("AUR OK\n" == data.decode()):
-            print("entrei no aur ok")
-            Message = "UPL " + directory + str(num)
+            Message = "UPL " + directory + ' ' + str(num)
             socket_aux.sendall(Message.encode())
-            #sckt.sendall(Message.encode())
             for i in range(num):
                 result += files[i] + ' '
                 path = os.path.join(directory, files[i])
@@ -85,12 +80,10 @@ def backupBS(user, password, server_address, directory):
                 size = os.path.getsize(path)
                 Message = '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
                 socket_aux.sendall(Message.encode())
-                #sckt.sendall(Message.encode())
         if("UPR OK\n" == data.decode()):
             print(result)
     finally:
         socket_aux.close()
-        #sckt.close()
 
 def backupDir(user, password, server_address, directory):
     sckt.connect(server_address)
@@ -119,8 +112,8 @@ def backupDir(user, password, server_address, directory):
             print("backup to: " + result[1] + ' ' + result[2])
             server_address = ('localhost', int(result[2])) #If we working on the same computer = 'localhost', else = result[1]
     finally:
-        sckt.close()
         backupBS(user, password, server_address, directory)
+        sckt.close()
     return 0
 
 def main():

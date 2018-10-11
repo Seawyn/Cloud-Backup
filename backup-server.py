@@ -71,7 +71,6 @@ def main():
                             usersfile = open("BS_userslist.txt", 'r')
                             userslist = usersfile.readlines()
                             for i in range(len(userslist)):
-                                print(userslist[i])
                                 if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
                                     print("User: " + data[1])
                                     luser = data[1]
@@ -80,9 +79,10 @@ def main():
                                     message = "AUR NOK\n"
                             usersfile.close()
                         elif(data[0] == "UPL"):
-                            print("vou mandar upr ok")
-                            for i in range(data[2]): #resolver ciclo
+                            print("data: " + str(data))
+                            for i in range(int(data[2])): #resolver ciclo
                                 fileslist = connection.recv(1024)
+                                fileslist = fileslist.decode()
                                 if i == 0:
                                     print(data[1] + ': ' + fileslist + ' Bytes received')
                                 else:
