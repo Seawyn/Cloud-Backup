@@ -6,6 +6,8 @@
 import socket
 import sys
 import os
+import signal
+import time
 
 def child(CSport, BSport):
     scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,8 +39,41 @@ def child(CSport, BSport):
                 print('New user: ' + data[1])
                 msg = "LUR OK\n"
                 scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
-
     os._exit(0)
+
+def send_file(folder, filename, sckt_aux):
+    path = os.path.join(folder, filename)
+    size = os.path.getsize(path)
+    Message = filename + ' ' + str(size)
+    sckt_aux.send(Message.encode())
+    time.sleep(0.1)
+    f = open(path, 'rb')
+    bytesToSend = f.read(1024)
+    while(bytesToSend):
+        sckt_aux.send(bytesToSend)
+        time.sleep(0.1)
+        bytesToSend = f.read(1024)
+    f.close()
+
+def receive_file(user, sckt_aux, n_files, path):
+    for i in range(int(n_files)):
+        data = sckt_aux.recv(1024)
+        data = data.decode().split()
+        name = data[0]
+        size = data[3]
+        bytesReceived = 0
+        size = int(size)
+        f = open(name, 'wb')
+        data = sckt_aux.recv(1024)
+        f.write(data)
+        bytesReceived += len(data)
+        while (bytesReceived < size):
+            data = sckt_aux.recv(1024)
+            f.write(data)
+            bytesReceived += len(data)
+        f.close()
+        path2 = os.path.join(path, name)
+        os.rename(name, path2)
 
 
 def main():
@@ -75,19 +110,27 @@ def main():
                                     print("User: " + data[1])
                                     luser = data[1]
                                     message = "AUR OK\n"
+                                    if not os.path.isdir(str(data[1])):
+                                        os.makedirs(data[1])
                                 else:
                                     message = "AUR NOK\n"
                             usersfile.close()
                         elif(data[0] == "UPL"):
-                            totalfileslist = connection.recv(1024)
-                            totalfileslist = totalfileslist.decode()
-                            filelist = totalfileslist.split('\n')
+                            os.makedirs(data[1])
+                            path = os.path.join(luser, data[1])
+                            os.rename(data[1], path)
+                            receive_file(luser, connection, data[2], path)
+                            filelist = os.listdir(path)
+                            totalfileslist = data[1] + ': '
                             for i in range(int(data[2])):
+                                path2 = os.path.join(path, filelist[i])
+                                size = os.path.getsize(path2)
                                 if i == 0:
-                                    print(data[1] + ': ' + filelist[i] + ' Bytes received')
+                                    totalfileslist += filelist[i] + ' ' + str(size) + ' Bytes received\n'
                                 else:
-                                    print(filelist[i] + ' Bytes received')
+                                    totalfileslist += filelist[i] + ' ' + str(size) + ' Bytes received\n'
                             message = "UPR OK\n"
+
                         connection.sendall(message.encode())
                     else:
                         break

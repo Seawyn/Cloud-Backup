@@ -115,11 +115,17 @@ def main():
                             print("List request")
                             CSusersfiles = open("backup_list.txt", 'r')
                             n_dir = CSusersfiles.readlines()
-                            message = "LDR " + str(len(n_dir)) #index out of range
-                            for i in range(len(n_dir)-1):
+                            fnum = 0
+                            message = ''
+                            for i in range(len(n_dir)):
                                 n_dir[i] = n_dir[i].split()
-                                message += ' ' + n_dir[i][1]
+                                if (luser == n_dir[i][0]):
+                                    fnum += 1
+                                    message += ' ' + n_dir[i][1]
+                            message = "LDR " + str(fnum) + message + '\n'
                             connection.sendall(message.encode())
+                        #elif data[0] == "LSF":
+
                         else:
                             usersfile = open("userslist.txt", 'r')
                             userslist = usersfile.readlines()
