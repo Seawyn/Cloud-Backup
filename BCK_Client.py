@@ -1,19 +1,19 @@
 import socket
 import os
 import time
+import signal
 
 def send_file(folder, filename, sock):
     path = os.path.join(folder, filename)
-    stat = time.gmtime(os.path.getmtime(path))
-    time1 = time.strftime('%d.%m.%y', stat)
-    time2 = time.strftime('%H:%M:%S', stat)
     size = os.path.getsize(path)
-    Message = filename + ' ' + time1 + ' ' + time2 + ' ' + str(size)
+    Message = filename + ' ' + str(size)
     sock.send(Message.encode())
+    time.sleep(0.1)
     f = open(path, 'rb')
     bytesToSend = f.read(1024)
     while(bytesToSend):
         sock.send(bytesToSend)
+        time.sleep(0.1)
         bytesToSend = f.read(1024)
     f.close()
 
@@ -33,14 +33,13 @@ def main():
     name = input("Which folder do you want to send?\n")
     files = os.listdir(name)
     num = len(files)
-    Message = str(num)
+    #Message = str(os.path.getsize(name))
+    Message = name + ' ' + str(num)
     sock.send(Message.encode())
     sock.recv(1024)
 
     for i in range(num):
         send_file(name, files[i], sock)
-        data = sock.recv(1024)
-        print(data.decode())
     sock.close()
 
 main()
