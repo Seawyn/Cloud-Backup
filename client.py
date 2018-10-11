@@ -116,6 +116,9 @@ def backupDir(user, password, server_address, directory):
         backupBS(user, password, server_address, directory)
     return 0
 
+def dirList():
+    return 0
+
 def main():
     if(len(sys.argv) == 4):
         CSname = input("CS name: ")
@@ -147,6 +150,9 @@ def main():
             elif(instruction[0] == "backup" and len(instruction) == 2):
                 directory = instruction[1]
                 backupDir(luser, lpassword, server_address, directory)
+            elif(instruction[0] == "dirlist"):
+                dirList()
+                print("oi")
             elif(instruction[0] == "exit"):
                 return 0
             else:
