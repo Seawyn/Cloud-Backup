@@ -6,6 +6,7 @@
 import socket
 import sys
 import os
+import signal
 import time
 
 sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -57,6 +58,41 @@ def deluser(lusername, lpass, server_address):
         sckt.close()
     return 0
 
+def send_file(folder, filename, sckt_aux):
+    path = os.path.join(folder, filename)
+    f = open(path, 'rb')
+    bytesToSend = f.read(1024)
+    while(bytesToSend):
+        sckt_aux.send(bytesToSend)
+        time.sleep(0.1)
+        bytesToSend = f.read(1024)
+    f.close()
+
+def receive_file(user, sckt_aux, n_files, path):
+    for i in range(int(n_files)):
+        data = sckt_aux.recv(1024)
+        print(data.decode())
+        data = data.decode().split()
+        name = data[0]
+        print(name)
+        size = data[1]
+        print(size)
+        bytesReceived = 0
+        size = int(size)
+        f = open(name, 'wb')
+        data = sckt_aux.recv(1024)
+        f.write(data)
+        bytesReceived += len(data)
+        print("Bytes Received so far: ", bytesReceived, "and Expected Size: ", size)
+        while (bytesReceived < size):
+            data = sckt_aux.recv(1024)
+            f.write(data)
+            bytesReceived += len(data)
+            print("Bytes Received so far: ", bytesReceived, "and Expected Size: ", size)
+        f.close()
+        path2 = os.path.join(path, name)
+        os.rename(name, path2)
+
 def backupBS(user, password, server_address, directory):
     socket_aux = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_aux.connect(server_address)
@@ -79,6 +115,8 @@ def backupBS(user, password, server_address, directory):
                 size = os.path.getsize(path)
                 Message = '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
                 socket_aux.sendall(Message.encode())
+                time.sleep(0.1)
+                send_file(directory, files[i], socket_aux)
             data = socket_aux.recv(1024)
         if("UPR OK\n" == data.decode()):
             print(result + '\n')
