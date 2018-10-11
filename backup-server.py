@@ -79,14 +79,14 @@ def main():
                                     message = "AUR NOK\n"
                             usersfile.close()
                         elif(data[0] == "UPL"):
-                            fileslist = connection.recv(1024)
-                            fileslist = fileslist.decode()
-                            oi = fileslist.split('\n')
+                            totalfileslist = connection.recv(1024)
+                            totalfileslist = totalfileslist.decode()
+                            filelist = totalfileslist.split('\n')
                             for i in range(int(data[2])):
                                 if i == 0:
-                                    print(data[1] + ': ' + oi[i] + ' Bytes received')
+                                    print(data[1] + ': ' + filelist[i] + ' Bytes received')
                                 else:
-                                    print(oi[i] + ' Bytes received')
+                                    print(filelist[i] + ' Bytes received')
                             message = "UPR OK\n"
                         connection.sendall(message.encode())
                     else:

@@ -67,7 +67,6 @@ def backupBS(user, password, server_address, directory):
         files = os.listdir(directory)
         num = len(files)
         result = 'completed – ' + directory + ': '
-        print(data.decode())
         if ("AUR OK\n" == data.decode()):
             Message = "UPL " + directory + ' ' + str(num)
             socket_aux.sendall(Message.encode())
@@ -80,8 +79,9 @@ def backupBS(user, password, server_address, directory):
                 size = os.path.getsize(path)
                 Message = '\t' + files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
                 socket_aux.sendall(Message.encode())
+            data = socket_aux.recv(1024)
         if("UPR OK\n" == data.decode()):
-            print(result)
+            print(result + '\n')
     finally:
         socket_aux.close()
 
@@ -112,8 +112,8 @@ def backupDir(user, password, server_address, directory):
             print("backup to: " + result[1] + ' ' + result[2])
             server_address = ('localhost', int(result[2])) #If we working on the same computer = 'localhost', else = result[1]
     finally:
-        backupBS(user, password, server_address, directory)
         sckt.close()
+        backupBS(user, password, server_address, directory)
     return 0
 
 def main():
