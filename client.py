@@ -154,15 +154,19 @@ def backupDir(user, password, server_address, directory):
         backupBS(user, password, server_address, directory)
     return 0
 
-def dirList():
+def dirList(user, password, server_address):
+    sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sckt.connect(server_address)
     try:
-        message = "AUsT " + user + " " + password
+        message = "AUT " + user + " " + password
         sckt.sendall(message.encode())
         data = sckt.recv(1024)
         if ("AUR OK\n" == data.decode()):
-            print("ahoy")
-
+            message = 'LSD\n'
+        sckt.sendall(message.encode())
+        result = sckt.recv(1024)
+        result = result.decode()
+        print(result)
     finally:
         sckt.close()
     return 0
@@ -199,8 +203,7 @@ def main():
                 directory = instruction[1]
                 backupDir(luser, lpassword, server_address, directory)
             elif(instruction[0] == "dirlist"):
-                dirList()
-                print("oi")
+                dirList(luser, lpassword, server_address)
             elif(instruction[0] == "exit"):
                 return 0
             else:

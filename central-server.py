@@ -100,7 +100,7 @@ def main():
                             if not found_user:
                                 CSusersfiles.close()
                                 CSusersfiles = open("backup_list.txt", 'a')
-                                CSusersfiles.write(luser + ' ' + data[1])
+                                CSusersfiles.write(luser + ' ' + data[1] + '\n')
                                 CSusersfiles.close()
 
                             parentPipe.send(1)
@@ -111,7 +111,15 @@ def main():
                                     connection.sendall(message.encode())
                                     message = data.decode()
                                     break
-
+                        elif data[0] == "LSD":
+                            print("List request")
+                            CSusersfiles = open("backup_list.txt", 'r')
+                            n_dir = CSusersfiles.readlines()
+                            message = "LDR " + str(len(n_dir)) #index out of range
+                            for i in range(len(n_dir)-1):
+                                n_dir[i] = n_dir[i].split()
+                                message += ' ' + n_dir[i][1]
+                            connection.sendall(message.encode())
                         else:
                             usersfile = open("userslist.txt", 'r')
                             userslist = usersfile.readlines()
