@@ -91,6 +91,18 @@ def main():
                         elif(data[0] == "BCK"):
                             print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
                             num = data[2]
+                            CSusersfiles = open("backup_list.txt", 'r')
+                            userslist = CSusersfiles.readlines()
+                            found_user = 0
+                            for i in range(len(userslist)):
+                                if(userslist[i] == luser + ' ' + data[1]):
+                                    found_user = 1
+                            if not found_user:
+                                CSusersfiles.close()
+                                CSusersfiles = open("backup_list.txt", 'a')
+                                CSusersfiles.write(luser + ' ' + data[1])
+                                CSusersfiles.close()
+
                             parentPipe.send(1)
                             data = connection.recv(1024)
                             while True:

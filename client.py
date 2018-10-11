@@ -155,6 +155,16 @@ def backupDir(user, password, server_address, directory):
     return 0
 
 def dirList():
+    sckt.connect(server_address)
+    try:
+        message = "AUsT " + user + " " + password
+        sckt.sendall(message.encode())
+        data = sckt.recv(1024)
+        if ("AUR OK\n" == data.decode()):
+            print("ahoy")
+
+    finally:
+        sckt.close()
     return 0
 
 def main():
