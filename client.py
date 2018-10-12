@@ -283,7 +283,7 @@ def main():
         if (isinstance(menu_input, str)):
         #FAZER CHECK NA PASSWORD
             instruction = menu_input.split()
-            if(instruction[0] == "login" and isinstance(instruction[1], str) and isinstance(instruction[2], str)):
+            if(instruction[0] == "login" and isinstance(instruction[1], str) and isinstance(instruction[2], str) and not logged):
                 luser = instruction[1]
                 lpassword = instruction[2]
                 logged = 1
@@ -310,10 +310,12 @@ def main():
             elif(instruction[0] == "logout" and logged):
                 logout(luser, lpassword)
                 logged = 0
-                print('\n')
+                print('Successful logout\n')
             elif(instruction[0] == "exit"):
                 return 0
-            elif not logged:
+            elif (instruction[0] == "login" and logged):
+                print("Logout required.")
+            elif instruction[0] != "exit" and not logged:
                 print("Login required.")
             else:
                 print("Error: Menu instruction invalid.\n")

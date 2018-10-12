@@ -99,15 +99,30 @@ def main():
                                 luser = -1
                                 message = "DLU OK\n"
                                 #Falta condição para os novos users
-                        elif(data[0] == "AUT" and data[1] not in users):
-                            usersfile = open("userslist.txt", 'a')
-                            usersfile.write(data[1] + ' ' + data[2] + '\n')
+                        elif(data[0] == "AUT"):
+                            usersfile = open("userslist.txt", 'r')
+                            userslist = usersfile.readlines()
+                            for i in range(len(userslist)):
+                                log = userslist[i].split()
+                                if(log[0] == data[1]):
+                                    if(log[1] == data[2]):
+                                        print("User: " + data[1])
+                                        luser = data[1]
+                                        message = "AUR OK\n"
+                                        break
+                                    else:
+                                        message = "AUR NOK\n"
+                                        break
                             usersfile.close()
-                            users[data[1]] = data[2]
-                            parentPipe.send(data[1])
-                            parentPipe.send(data[2])
-                            message = "AUR NEW\n"
-                            print("New user: " + data[1])
+                            if(message != "AUR OK\n" and message != "AUR NOK\n"):
+                                usersfile = open("userslist.txt", 'a')
+                                usersfile.write(data[1] + ' ' + data[2] + '\n')
+                                usersfile.close()
+                                users[data[1]] = data[2]
+                                parentPipe.send(data[1])
+                                parentPipe.send(data[2])
+                                message = "AUR NEW\n"
+                                print("New user: " + data[1])
                         elif(data[0] == "BCK"):
                             print(data[0] +  ' ' + luser + ' ' + data[1] + ' ' + str(socket.gethostbyname(socket.gethostname())) + ' ' + str(BSport))
                             num = data[2]
@@ -178,15 +193,6 @@ def main():
                                     IPBS = n_dir[i][2]
                                     portBS = n_dir[i][3]
                             message = "RSR " + IPBS + ' ' + portBS
-                        else:
-                            usersfile = open("userslist.txt", 'r')
-                            userslist = usersfile.readlines()
-                            for i in range(len(userslist)):
-                                if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
-                                    print("User: " + data[1])
-                                    luser = data[1]
-                                    message = "AUR OK\n"
-                            usersfile.close()
                         connection.sendall(message.encode())
                     else:
                         break
