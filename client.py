@@ -136,6 +136,7 @@ def backupDir(user, password, server_address, directory):
             Message = "BCK " + directory + ' ' + str(num)
             sckt.sendall(Message.encode())
             #Part where he receives the ip address and port
+            #Envia os ficheiros e os seus detalhes
             Message = ''
             for i in range(num):
                 path = os.path.join(directory, files[i])
@@ -206,8 +207,7 @@ def restoreBS(user, password, server_address, directory):
             if (os.path.isdir(directory)):
                 print('existe')
                 shutil.rmtree(directory)
-            else:
-                os.makedirs(directory)
+            os.makedirs(directory)
             receive_file(luser, socket_aux, data[1], directory)
             data = socket_aux.recv(1024)
         if("UPR OK\n" == data.decode()):
