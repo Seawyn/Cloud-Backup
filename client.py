@@ -72,24 +72,19 @@ def send_file(folder, filename, sckt_aux):
 def receive_file(user, sckt_aux, n_files, path):
     for i in range(int(n_files)):
         data = sckt_aux.recv(1024)
-        print(data.decode())
         data = data.decode().split()
         name = data[0]
-        print(name)
         size = data[1]
-        print(size)
         bytesReceived = 0
         size = int(size)
         f = open(name, 'wb')
         data = sckt_aux.recv(1024)
         f.write(data)
         bytesReceived += len(data)
-        print("Bytes Received so far: ", bytesReceived, "and Expected Size: ", size)
         while (bytesReceived < size):
             data = sckt_aux.recv(1024)
             f.write(data)
             bytesReceived += len(data)
-            print("Bytes Received so far: ", bytesReceived, "and Expected Size: ", size)
         f.close()
         path2 = os.path.join(path, name)
         os.rename(name, path2)
@@ -197,7 +192,6 @@ def restoreBS(user, password, server_address, directory):
         message = "AUT " + user + " " + password
         socket_aux.sendall(message.encode())
         data = socket_aux.recv(1024)
-        result = 'Sending ' + directory + ': '
         if ("AUR OK\n" == data.decode()):
             Message = "RSB " + directory
             socket_aux.sendall(Message.encode())
@@ -205,13 +199,18 @@ def restoreBS(user, password, server_address, directory):
             data = data.decode()
             data = data.split()
             if (os.path.isdir(directory)):
-                print('existe')
                 shutil.rmtree(directory)
             os.makedirs(directory)
             receive_file(luser, socket_aux, data[1], directory)
             data = socket_aux.recv(1024)
-        if("UPR OK\n" == data.decode()):
-            print(result + '\n')
+        result = "success – " + directory + ': '
+        n_files = os.listdir(directory)
+        for i in range(len(n_files)):
+            if(i != len(n_files)-1 ):
+                result += n_files[i] + ', '
+            else:
+                result += n_files[i] + '\n'
+        print(result)
     finally:
         socket_aux.close()
 
@@ -223,7 +222,6 @@ def restoreDir(user, password, server_address, directory):
         sckt.sendall(message.encode())
         data = sckt.recv(1024)
         if ("AUR OK\n" == data.decode()):
-            print('send')
             files = os.listdir(directory)
             num = len(files)
             Message = "RST " + directory + '\n'

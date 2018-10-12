@@ -160,7 +160,6 @@ def main():
                         else:
                             usersfile = open("userslist.txt", 'r')
                             userslist = usersfile.readlines()
-                            print(data)
                             for i in range(len(userslist)):
                                 if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
                                     print("User: " + data[1])

@@ -62,3 +62,5 @@ suwhsdwd YAYA localhost 59000
 uiwdghd YAYA localhost 59000
 onum YAYA localhost 59000
 idhbwd YAYA localhost 59000
+MINIIIIIIIIIIIIIIIII YAYA localhost 59000
+gajassss YAYA localhost 59000
