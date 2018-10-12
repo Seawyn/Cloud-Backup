@@ -140,7 +140,7 @@ def main():
                             while True:
                                 if parentPipe.recv() == 4:
                                     data = parentPipe.recv()
-                                    message = 'LFD ' + data[0][0] + ' ' + str(data[0][1]) + ' ' + str(data[2]) + ' '
+                                    message = 'LFD ' + data[0][0] + ' ' + str(data[0][1]) + ' ' + str(data[2]) + '\n'
                                     for i in range(3,len(data)):
                                         message += data[i] + ' '
                                     message += '\n'
