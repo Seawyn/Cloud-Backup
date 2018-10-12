@@ -53,6 +53,17 @@ def child(CSport, BSport, childPipe):
                 childPipe.send(4)
                 dataUDP.insert(0, addr)
                 childPipe.send(dataUDP)
+        if (childPipe.recv() == 5):
+            BSmsg = "DLB " + luser + ' ' + childPipe.recv()
+            scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
+            dataUDP, addr = scktUDP.recvfrom(1024)
+            dataUDP = dataUDP.decode()
+            print(dataUDP)
+            if(dataUDP == "DBR NOK\n"):
+                childPipe.send(6)
+            else:
+                childPipe.send(7)
+
     os._exit(0)
 
 def main():
@@ -147,6 +158,16 @@ def main():
                                     message += '\n'
                                     connection.sendall(message.encode())
                                     break
+                        elif(data[0] == "DEL"):
+                            parentPipe.send(5)
+                            parentPipe.send(data[1])
+                            while True:
+                                result = parentPipe.recv()
+                                if result == 6:
+                                    message = "DDR NOK\n"
+                                else:
+                                    message = "DDR OK\n"
+                                break
                         elif(data[0] == "RST"):
                             print("Restore " + data[1])
                             CSusersfiles = open("backup_list.txt", 'r')

@@ -51,6 +51,16 @@ def child(CSport, BSport):
                 file_time = time.strftime('%H:%M:%S', stat)
                 message += n_files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
             scktUDP.sendto(message.encode(), (UDP_IP, CSport))
+        elif(data[0] == "DLB"):
+            path = os.path.join(os.getcwd(), data[1])
+            path = os.path.join(path, data[2])
+            os.remove(path)
+            if(os.path.isdir(path)):
+                message = "DBR NOK\n"
+            else:
+                message = "DBR OK\n"
+            scktUDP.sendto(message.encode(), (UDP_IP, CSport))
+
     os._exit(0)
 
 def send_file(luser, folder, filename, sckt_aux):

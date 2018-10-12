@@ -237,6 +237,27 @@ def restoreDir(user, password, server_address, directory):
         restoreBS(user, password, server_address, directory)
     return 0
 
+def deleteDir(user, password, server_address, directory):
+    sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sckt.connect(server_address)
+    try:
+        message = "AUT " + user + " " + password
+        sckt.sendall(message.encode())
+        data = sckt.recv(1024)
+        if ("AUR OK\n" == data.decode()):
+            Message = "DEL " + directory + '\n'
+            sckt.sendall(Message.encode())
+            #Part where he receives the ip address and port
+            data = sckt.recv(1024)
+            data = data.decode()
+            if(data == 'DDR OK\n'):
+                print('deleted ' + directory + '\n')
+            else:
+                print('directory does not exist')
+    finally:
+        sckt.close()
+    return 0
+
 def logout(user, password):
     luser = -1
     lpassword = -1
@@ -283,6 +304,9 @@ def main():
             elif(instruction[0] == "restore" and len(instruction) == 2 and logged):
                 directory = instruction[1]
                 restoreDir(luser, lpassword, server_address, directory)
+            elif(instruction[0] == "delete" and len(instruction) == 2 and logged):
+                directory = instruction[1]
+                deleteDir(luser, lpassword, server_address, directory)
             elif(instruction[0] == "logout" and logged):
                 logout(luser, lpassword)
                 logged = 0
