@@ -123,6 +123,8 @@ def main():
                                     fnum += 1
                                     message += ' ' + n_dir[i][1]
                             message = "LDR " + str(fnum) + message + '\n'
+                            if not fnum:
+                                message = "LDR 0\n"
                             connection.sendall(message.encode())
                         #elif data[0] == "LSF":
 
