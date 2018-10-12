@@ -188,6 +188,11 @@ def filelistDir(user, password, server_address, directory):
         sckt.close()
     return 0
 
+def logout(user, password):
+    luser = -1
+    lpassword = -1
+    return 0
+
 def main():
     if(len(sys.argv) == 4):
         CSname = input("CS name: ")
@@ -202,6 +207,7 @@ def main():
         CSport = 58017
     server_address = ('localhost', CSport)
     global luser
+    logged = 0
     while True:
         menu_input = input()
         if (isinstance(menu_input, str)):
@@ -210,22 +216,29 @@ def main():
             if(instruction[0] == "login" and isinstance(instruction[1], str) and isinstance(instruction[2], str)):
                 luser = instruction[1]
                 lpassword = instruction[2]
+                logged = 1
                 login(luser, lpassword, server_address)
-            elif(instruction[0] == "deluser"):
+            elif(instruction[0] == "deluser" and logged):
             		if(luser == -1):
             			print("Login required.")
             		else:
                 		deluser(luser, lpassword, server_address)
-            elif(instruction[0] == "backup" and len(instruction) == 2):
+            elif(instruction[0] == "backup" and len(instruction) == 2 and logged):
                 directory = instruction[1]
                 backupDir(luser, lpassword, server_address, directory)
-            elif(instruction[0] == "dirlist"):
+            elif(instruction[0] == "dirlist" and logged):
                 dirList(luser, lpassword, server_address)
-            elif(instruction[0]=="filelist" and len(instruction) == 2):
+            elif(instruction[0]=="filelist" and len(instruction) == 2 and logged):
                 directory = instruction[1]
                 filelistDir(luser, lpassword, server_address, directory)
+            elif(instruction[0] == "logout" and logged):
+                logout(luser, lpassword)
+                logged = 0
+                print('\n')
             elif(instruction[0] == "exit"):
                 return 0
+            elif not logged:
+                print("Login required.")
             else:
                 print("Error: Menu instruction invalid.\n")
 
