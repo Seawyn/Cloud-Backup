@@ -102,6 +102,7 @@ def main():
                         elif(data[0] == "AUT"):
                             usersfile = open("userslist.txt", 'r')
                             userslist = usersfile.readlines()
+                            message = ''
                             for i in range(len(userslist)):
                                 log = userslist[i].split()
                                 if(log[0] == data[1]):

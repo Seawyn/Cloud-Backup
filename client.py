@@ -19,6 +19,7 @@ def login(user, password, server_address):
     lpass = password
     sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Resolve o bad file descriptor
     sckt.connect(server_address)
+    logged = 1
     try:
         message = "AUT "+ lusername + " " + lpass
         sckt.sendall(message.encode())
@@ -33,9 +34,12 @@ def login(user, password, server_address):
                 result = "Successful login\n"
             elif("AUR NOK\n" == data.decode()):
                 result = "Wrong Password\n"
+                logged = 0
             print(result)
     finally:
         sckt.close()
+    if (logged == 0):
+        return 1
     return 0
 
 def deluser(lusername, lpass, server_address):
@@ -287,7 +291,8 @@ def main():
                 luser = instruction[1]
                 lpassword = instruction[2]
                 logged = 1
-                login(luser, lpassword, server_address)
+                if (login(luser, lpassword, server_address) == 1):
+                    logged = 0
             elif(instruction[0] == "deluser" and logged):
             		if(luser == -1):
             			print("Login required.")
@@ -314,9 +319,9 @@ def main():
             elif(instruction[0] == "exit"):
                 return 0
             elif (instruction[0] == "login" and logged):
-                print("Logout required.")
+                print("Logout required.\n")
             elif instruction[0] != "exit" and not logged:
-                print("Login required.")
+                print("Login required.\n")
             else:
                 print("Error: Menu instruction invalid.\n")
 

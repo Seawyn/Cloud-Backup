@@ -39,7 +39,7 @@ def child(CSport, BSport):
                 usersfile.close()
                 print('New user: ' + data[1])
                 msg = "LUR OK\n"
-                scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
+            scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
         elif(data[0] == "LSF"):
             path = os.path.join(data[1], data[2])
             n_files = os.listdir(path)
