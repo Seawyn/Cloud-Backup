@@ -39,6 +39,18 @@ def child(CSport, BSport):
                 print('New user: ' + data[1])
                 msg = "LUR OK\n"
                 scktUDP.sendto(msg.encode(), (UDP_IP, CSport))
+        elif(data[0] == "LSF"):
+            path = os.path.join(data[1], data[2])
+            n_files = os.listdir(path)
+            message = 'LFD ' + str(len(n_files)) + '\n'
+            for i in range(len(n_files)):
+                path2 = os.path.join(path, n_files[i])
+                size = os.path.getsize(path2)
+                stat = time.gmtime(os.path.getmtime(path2))
+                date = time.strftime('%d.%m.%y', stat)
+                file_time = time.strftime('%H:%M:%S', stat)
+                message += n_files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
+            scktUDP.sendto(message.encode(), (UDP_IP, CSport))
     os._exit(0)
 
 def send_file(folder, filename, sckt_aux):
@@ -130,6 +142,29 @@ def main():
                                 else:
                                     totalfileslist += filelist[i] + ' ' + str(size) + ' Bytes received\n'
                             message = "UPR OK\n"
+                        elif(data[0] == "RSB"):
+                            path = os.path.join(luser, data[1])
+                            files = os.listdir(path)
+                            num = len(files)
+                            message = "RBR " + str(num) + '\n'
+                            connection.sendall(message.encode())
+                            message = ''
+                            send_txt = 'Sending ' + data[1] + ': '
+                            for i in range(num):
+                                path2 = os.path.join(path, files[i])
+                                stat = time.gmtime(os.path.getmtime(path2))
+                                date = time.strftime('%d.%m.%y', stat)
+                                file_time = time.strftime('%H:%M:%S', stat)
+                                size = os.path.getsize(path2)
+                                if(i != num-1 ):
+                                    send_txt += files[i] + ', '
+                                else:
+                                    send_txt += files[i] + '\n'
+                                message += files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
+                                time.sleep(0.1)
+                                send_file(data[1], files[i], connection)
+                            print(send_txt)
+                            connection.sendall(message.encode())
 
                         connection.sendall(message.encode())
                     else:
