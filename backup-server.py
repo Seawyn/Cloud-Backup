@@ -8,6 +8,7 @@ import sys
 import os
 import signal
 import time
+import shutil
 
 def child(CSport, BSport):
     scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -54,7 +55,7 @@ def child(CSport, BSport):
         elif(data[0] == "DLB"):
             path = os.path.join(os.getcwd(), data[1])
             path = os.path.join(path, data[2])
-            os.remove(path)
+            shutil.rmtree(path)
             if(os.path.isdir(path)):
                 message = "DBR NOK\n"
             else:
