@@ -53,17 +53,18 @@ def child(CSport, BSport):
             scktUDP.sendto(message.encode(), (UDP_IP, CSport))
     os._exit(0)
 
-def send_file(folder, filename, sckt_aux):
-    path = os.path.join(folder, filename)
+def send_file(luser, folder, filename, sckt_aux):
+    path = os.path.join(luser, folder)
+    path = os.path.join(path, filename)
     size = os.path.getsize(path)
-    Message = filename + ' ' + str(size)
+    Message = filename + ' ' + str(size) + ' '
     sckt_aux.send(Message.encode())
-    time.sleep(0.1)
+    time.sleep(0.7)
     f = open(path, 'rb')
     bytesToSend = f.read(1024)
     while(bytesToSend):
         sckt_aux.send(bytesToSend)
-        time.sleep(0.1)
+        time.sleep(0.7)
         bytesToSend = f.read(1024)
     f.close()
 
@@ -161,10 +162,9 @@ def main():
                                 else:
                                     send_txt += files[i] + '\n'
                                 message += files[i] + ' ' + date + ' ' + file_time + ' ' + str(size) + '\n'
-                                time.sleep(0.1)
-                                send_file(data[1], files[i], connection)
+                                time.sleep(0.7)
+                                send_file(luser, data[1], files[i], connection)
                             print(send_txt)
-                            connection.sendall(message.encode())
 
                         connection.sendall(message.encode())
                     else:
