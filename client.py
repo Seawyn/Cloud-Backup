@@ -8,6 +8,7 @@ import sys
 import os
 import signal
 import time
+import shutil
 
 sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 luser = -1
@@ -188,6 +189,56 @@ def filelistDir(user, password, server_address, directory):
         sckt.close()
     return 0
 
+def restoreBS(user, password, server_address, directory):
+    socket_aux = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket_aux.connect(server_address)
+    try:
+        message = "AUT " + user + " " + password
+        socket_aux.sendall(message.encode())
+        data = socket_aux.recv(1024)
+        result = 'Sending ' + directory + ': '
+        if ("AUR OK\n" == data.decode()):
+            Message = "RSB " + directory
+            socket_aux.sendall(Message.encode())
+            data = socket_aux.recv(1024)
+            data = data.decode()
+            data = data.split()
+            if (os.path.isdir(directory)):
+                print('existe')
+                shutil.rmtree(directory)
+            else:
+                os.makedirs(directory)
+            receive_file(luser, socket_aux, data[1], directory)
+            data = socket_aux.recv(1024)
+        if("UPR OK\n" == data.decode()):
+            print(result + '\n')
+    finally:
+        socket_aux.close()
+
+def restoreDir(user, password, server_address, directory):
+    sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sckt.connect(server_address)
+    try:
+        message = "AUT " + user + " " + password
+        sckt.sendall(message.encode())
+        data = sckt.recv(1024)
+        if ("AUR OK\n" == data.decode()):
+            print('send')
+            files = os.listdir(directory)
+            num = len(files)
+            Message = "RST " + directory + '\n'
+            sckt.sendall(Message.encode())
+            #Part where he receives the ip address and port
+            data = sckt.recv(1024)
+            data = data.decode()
+            data = data.split()
+            print('from : ' + data[1] + ' ' + data[2])
+            server_address = (data[1], int(data[2])) #If we working on the same computer = 'localhost', else = result[1]
+    finally:
+        sckt.close()
+        restoreBS(user, password, server_address, directory)
+    return 0
+
 def logout(user, password):
     luser = -1
     lpassword = -1
@@ -231,6 +282,9 @@ def main():
             elif(instruction[0]=="filelist" and len(instruction) == 2 and logged):
                 directory = instruction[1]
                 filelistDir(luser, lpassword, server_address, directory)
+            elif(instruction[0] == "restore" and len(instruction) == 2 and logged):
+                directory = instruction[1]
+                restoreDir(luser, lpassword, server_address, directory)
             elif(instruction[0] == "logout" and logged):
                 logout(luser, lpassword)
                 logged = 0

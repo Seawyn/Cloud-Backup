@@ -109,7 +109,8 @@ def main():
                             if not found_user:
                                 CSusersfiles.close()
                                 CSusersfiles = open("backup_list.txt", 'a')
-                                CSusersfiles.write(luser + ' ' + data[1] + '\n')
+                                IPBS = 'localhost' #This has to be changed if we want to try it out with another machine
+                                CSusersfiles.write(luser + ' ' + data[1] + ' ' + IPBS + ' ' + str(BSport) + '\n')
                                 CSusersfiles.close()
 
                             parentPipe.send(1)
@@ -146,9 +147,20 @@ def main():
                                     message += '\n'
                                     connection.sendall(message.encode())
                                     break
+                        elif(data[0] == "RST"):
+                            print("Restore " + data[1])
+                            CSusersfiles = open("backup_list.txt", 'r')
+                            n_dir = CSusersfiles.readlines()
+                            for i in range(len(n_dir)):
+                                n_dir[i] = n_dir[i].split()
+                                if (luser == n_dir[i][0] and data[1] == n_dir[i][1]):
+                                    IPBS = n_dir[i][2]
+                                    portBS = n_dir[i][3]
+                            message = "RSR " + IPBS + ' ' + portBS
                         else:
                             usersfile = open("userslist.txt", 'r')
                             userslist = usersfile.readlines()
+                            print(data)
                             for i in range(len(userslist)):
                                 if(userslist[i] == data[1] + ' ' + data[2] + '\n'):
                                     print("User: " + data[1])
