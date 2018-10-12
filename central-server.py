@@ -37,13 +37,14 @@ def child(CSport, BSport, childPipe):
     luser = childPipe.recv()
     lpassword = childPipe.recv()
     while True:
-        if childPipe.recv() == 1:
+        flagUDP = childPipe.recv()
+        if flagUDP == 1:
             BSmsg = "LSU " + str(luser) + ' ' + str(lpassword)
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
             dataUDP, addr = scktUDP.recvfrom(1024)
             if(dataUDP.decode() == "LUR OK\n" or dataUDP.decode() == "LUR NOK\n"):
                 childPipe.send(2)
-        if(childPipe.recv() == 3):
+        if(flagUDP == 3):
             BSmsg = 'LSF ' + luser + ' ' + childPipe.recv() + '\n'
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
             dataUDP, addr = scktUDP.recvfrom(1024)
@@ -53,12 +54,11 @@ def child(CSport, BSport, childPipe):
                 childPipe.send(4)
                 dataUDP.insert(0, addr)
                 childPipe.send(dataUDP)
-        if (childPipe.recv() == 5):
+        if (flagUDP == 5):
             BSmsg = "DLB " + luser + ' ' + childPipe.recv()
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
             dataUDP, addr = scktUDP.recvfrom(1024)
             dataUDP = dataUDP.decode()
-            print(dataUDP)
             if(dataUDP == "DBR NOK\n"):
                 childPipe.send(6)
             else:
