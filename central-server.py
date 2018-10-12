@@ -40,10 +40,19 @@ def child(CSport, BSport, childPipe):
         if childPipe.recv() == 1:
             BSmsg = "LSU " + str(luser) + ' ' + str(lpassword)
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
-            dataUDP, addr = scktUDP.recvfrom(1024) #the problem is here
+            dataUDP, addr = scktUDP.recvfrom(1024)
             if(dataUDP.decode() == "LUR OK\n" or dataUDP.decode() == "LUR NOK\n"):
                 childPipe.send(2)
-                #p.join()
+        if(childPipe.recv() == 3):
+            BSmsg = 'LSF ' + luser + ' ' + childPipe.recv() + '\n'
+            scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
+            dataUDP, addr = scktUDP.recvfrom(1024)
+            dataUDP = dataUDP.decode()
+            dataUDP = dataUDP.split()
+            if(dataUDP[0] == "LFD"):
+                childPipe.send(4)
+                dataUDP.insert(0, addr)
+                childPipe.send(dataUDP)
     os._exit(0)
 
 def main():
@@ -123,11 +132,20 @@ def main():
                                     fnum += 1
                                     message += ' ' + n_dir[i][1]
                             message = "LDR " + str(fnum) + message + '\n'
-                            if not fnum:
-                                message = "LDR 0\n"
                             connection.sendall(message.encode())
-                        #elif data[0] == "LSF":
-
+                        elif data[0] == "LSF":
+                            print("Filelist request")
+                            parentPipe.send(3)
+                            parentPipe.send(data[1])
+                            while True:
+                                if parentPipe.recv() == 4:
+                                    data = parentPipe.recv()
+                                    message = 'LFD ' + data[0][0] + ' ' + str(data[0][1]) + ' ' + str(data[2]) + ' '
+                                    for i in range(3,len(data)):
+                                        message += data[i] + ' '
+                                    message += '\n'
+                                    connection.sendall(message.encode())
+                                    break
                         else:
                             usersfile = open("userslist.txt", 'r')
                             userslist = usersfile.readlines()

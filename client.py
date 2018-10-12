@@ -171,6 +171,23 @@ def dirList(user, password, server_address):
         sckt.close()
     return 0
 
+def filelistDir(user, password, server_address, directory):
+    sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sckt.connect(server_address)
+    try:
+        message = "AUT " + user + " " + password
+        sckt.sendall(message.encode())
+        data = sckt.recv(1024)
+        if ("AUR OK\n" == data.decode()):
+            message = 'LSF ' + directory + '\n'
+        sckt.sendall(message.encode())
+        result = sckt.recv(1024)
+        result = result.decode()
+        print(result)
+    finally:
+        sckt.close()
+    return 0
+
 def main():
     if(len(sys.argv) == 4):
         CSname = input("CS name: ")
@@ -178,7 +195,7 @@ def main():
     elif(len(sys.argv) == 3 and isinstance(sys.argv[2], str)):
         CSname = input("CS name: ")
     elif(len(sys.argv) == 3 and isinstance(sys.argv[2], int)):
-        CSport = input("port: ")
+        CSport = input("Port: ")
     elif(len(sys.argv) == 3):
         raise TypeError('Error: invalid input.')
     else:
@@ -204,6 +221,9 @@ def main():
                 backupDir(luser, lpassword, server_address, directory)
             elif(instruction[0] == "dirlist"):
                 dirList(luser, lpassword, server_address)
+            elif(instruction[0]=="filelist" and len(instruction) == 2):
+                directory = instruction[1]
+                filelistDir(luser, lpassword, server_address, directory)
             elif(instruction[0] == "exit"):
                 return 0
             else:
