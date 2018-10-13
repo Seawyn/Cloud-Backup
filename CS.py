@@ -16,7 +16,8 @@ from multiprocessing import Process, Pipe
 
 scktTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 scktUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+luser = -1
+lpassword = -1
 
 def signal_handler(sig, frame):
     scktTCP.close()
@@ -34,10 +35,13 @@ def child(CSport, BSport, childPipe):
     print (BSmsg)
     msg = "RGR OK\n"
     scktUDP.sendto(msg.encode(), (UDP_IP, BSport))
+    print('Get user')
     luser = childPipe.recv()
     lpassword = childPipe.recv()
     while True:
+        print('Ciclo')
         flagUDP = childPipe.recv()
+        print(flagUDP)
         if flagUDP == 1:
             BSmsg = "LSU " + str(luser) + ' ' + str(lpassword)
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
@@ -68,6 +72,8 @@ def child(CSport, BSport, childPipe):
 
 def main():
     users = {}
+    global luser
+    global lpassword
     if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
         CSport = input("Port: ")
     elif(len(sys.argv) == 3):
@@ -108,13 +114,16 @@ def main():
                                 if(log[0] == data[1]):
                                     if(log[1] == data[2]):
                                         print("User: " + data[1])
-                                        luser = data[1]
                                         message = "AUR OK\n"
                                         break
                                     else:
                                         message = "AUR NOK\n"
                                         break
                             usersfile.close()
+                            if(luser == -1 and lpassword == -1):
+                                parentPipe.send(data[1])
+                                parentPipe.send(data[2])
+                                luser = data[1]
                             if(message != "AUR OK\n" and message != "AUR NOK\n"):
                                 usersfile = open("userslist.txt", 'a')
                                 usersfile.write(data[1] + ' ' + data[2] + '\n')
@@ -131,10 +140,10 @@ def main():
                             userslist = CSusersfiles.readlines()
                             found_user = 0
                             for i in range(len(userslist)):
-                                if(userslist[i] == luser + ' ' + data[1]):
+                                if(userslist[i] == luser + ' ' + data[1] + 'localhost' + str(BSport) + '\n'):
                                     found_user = 1
+                            CSusersfiles.close()
                             if not found_user:
-                                CSusersfiles.close()
                                 CSusersfiles = open("backup_list.txt", 'a')
                                 IPBS = 'localhost' #This has to be changed if we want to try it out with another machine
                                 CSusersfiles.write(luser + ' ' + data[1] + ' ' + IPBS + ' ' + str(BSport) + '\n')
