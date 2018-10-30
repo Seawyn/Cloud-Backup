@@ -35,13 +35,10 @@ def child(CSport, BSport, childPipe):
     print (BSmsg)
     msg = "RGR OK\n"
     scktUDP.sendto(msg.encode(), (UDP_IP, BSport))
-    print('Get user')
     luser = childPipe.recv()
     lpassword = childPipe.recv()
     while True:
-        print('Ciclo')
         flagUDP = childPipe.recv()
-        print(flagUDP)
         if flagUDP == 1:
             BSmsg = "LSU " + str(luser) + ' ' + str(lpassword)
             scktUDP.sendto(BSmsg.encode(), (UDP_IP, BSport))
@@ -74,10 +71,8 @@ def main():
     users = {}
     global luser
     global lpassword
-    if(len(sys.argv) == 3 and (isinstance(sys.argv[2], int))):
-        CSport = input("Port: ")
-    elif(len(sys.argv) == 3):
-        raise TypeError('Error: invalid input.')
+    if(len(sys.argv) > 1):
+    	CSport = 59000
     else:
         CSport = 58017
         BSport = 59000

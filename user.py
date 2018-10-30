@@ -268,16 +268,18 @@ def logout(user, password):
     return 0
 
 def main():
-    CSport = 58017
-    CSname = 'localhost'
-    if(len(sys.argv) > 1):
-        for i in range(len(sys.argv)):
-            if (sys.argv[i] == '-n'):
-                CSname = socket.gethostbyname(sys.argv[i + 1])
-            elif (sys.argv[i] == '-p'):
-                CSport = int(sys.agv[i + 1])
-
-    server_address = (CSname, CSport)
+    if(len(sys.argv) == 4):
+        CSname = input("CS name: ")
+        CSport = input("Port: ")
+    elif(len(sys.argv) == 3 and isinstance(sys.argv[2], str)):
+        CSname = input("CS name: ")
+    elif(len(sys.argv) == 3 and isinstance(sys.argv[2], int)):
+        CSport = input("Port: ")
+    elif(len(sys.argv) == 3):
+        raise TypeError('Error: invalid input.')
+    else:
+        CSport = 58017
+    server_address = ('localhost', CSport)
     global luser
     logged = 0
     while True:
